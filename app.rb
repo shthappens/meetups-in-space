@@ -33,5 +33,60 @@ get '/sign_out' do
 end
 
 get '/meetups' do
+  @meetups = Meetup.order(:name)
   erb :'meetups/index'
+end
+
+get '/meetups/:id' do
+  @meetup_info = Meetup.find(params[:id])
+  @creator = Membership.find_by(creator: true, meetup_id: @meetup_info.id)
+  @members = Membership.where(meetup_id: @meetup_info.id)
+  erb :'meetups/show'
+end
+
+get '/new' do
+  @current_user = current_user
+  erb :'meetups/new'
+end
+
+post '/new' do
+  @meetup_info = Meetup.new(
+    name: params["name"],
+    location: params["location"],
+    description: params["description"],
+    user_id: current_user.id
+  )
+  if @meetup_info.save
+    @members = Membership.create(
+      user_id: current_user.id,
+      meetup_id: @meetup_info.id,
+      creator: true
+    )
+    flash[:notice] = "Meetup Successfully Created!"
+    redirect "meetups/#{@meetup_info.id}"
+  else
+    flash.now[:notice] = @meetup_info.errors.full_messages.join(", ")
+    erb :'meetups/new'
+  end
+end
+
+post '/join/:id' do
+  @meetup_info = Meetup.find(params[:id])
+  @creator = Membership.find_by(creator: true, meetup_id: @meetup_info.id)
+  @members = Membership.where(meetup_id: @meetup_info.id)
+  erb :'meetups/show'
+
+  if @current_user.nil?
+    flash[:notice] = "Please sign in before joining a Meetup."
+    redirect "/meetups/#{@meetup_info.id}"
+  else
+    binding.pry
+    flash[:notice] = "You successfully joined this Meetup!"
+    @new_member = Membership.create(
+    user_id: current_user.id,
+    meetup_id: @meetup_info.id
+    )
+    redirect "/meetups/#{@meetup_info.id}"
+  end
+
 end

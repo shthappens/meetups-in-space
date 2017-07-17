@@ -1,0 +1,16 @@
+<h1> Create a new Meetup </h1>
+
+<h2>Signed in as: <%= @current_user.username %></h2>
+
+<form action="/new" method="post">
+  Meetup Name:<br>
+  <input type="text" id="meetup-name-input" name="name" value=" <%= params["name"] %> ">
+  <br>
+  Location:<br>
+  <input type="text" id="meetup-location-input" name="location" value=" <%= params["location"] %> ">
+  <br>
+  Description:<br>
+  <input type="text" id="meetup-description-input" name="description" value=" <%= params["description"] %> ">
+  <br>
+  <input type="submit" value="Submit">
+</form>

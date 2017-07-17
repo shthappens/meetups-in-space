@@ -1,0 +1,22 @@
+<h1><%= @meetup_info.name %></h1>
+
+<dl>
+  <dt>Description:</dt>
+  <dd><%= @meetup_info.description %></dd>
+  <dt>Location:</dt>
+  <dd><%= @meetup_info.location %></dd>
+  <dt>Creator:</dt>
+  <dd><%= @creator.user.username %></dd>
+  <dt>Members:</dt>
+  <dd><% @members.each do |member| %>
+      <%= member.user.username %>
+      <img src="<%= member.user.avatar_url %>">
+    <% end %>
+  </dd>
+</dl>
+
+<form id="join" action="/join/<%= @meetup_info.id %>" method="POST">
+  <input type=submit value="Join This Meetup">
+</form>
+
+<a href="/meetups">Back to all Meetups</a>
