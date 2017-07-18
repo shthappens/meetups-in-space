@@ -76,17 +76,24 @@ post '/join/:id' do
   @members = Membership.where(meetup_id: @meetup_info.id)
   erb :'meetups/show'
 
+  current_members = []
+  @members.each do |member|
+    current_members << member.user.username
+  end
+
   if @current_user.nil?
     flash[:notice] = "Please sign in before joining a Meetup."
-    redirect "/meetups/#{@meetup_info.id}"
+    redirect "meetups/#{@meetup_info.id}"
+  elsif current_members.include?(@current_user.username)
+    flash[:notice] = "You are already signed up for this Meetup."
+    redirect "meetups/#{@meetup_info.id}"
   else
-    binding.pry
     flash[:notice] = "You successfully joined this Meetup!"
     @new_member = Membership.create(
     user_id: current_user.id,
     meetup_id: @meetup_info.id
     )
-    redirect "/meetups/#{@meetup_info.id}"
+    redirect "meetups/#{@meetup_info.id}"
   end
 
 end
